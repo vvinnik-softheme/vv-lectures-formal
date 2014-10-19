@@ -1,0 +1,529 @@
+%
+% Softheme internal lectures
+%
+% Formal models and methods for program semantics, correctness and verification
+%
+% (c) Vadim Vinnik, 2014
+%
+% vadim.vinnik@gmail.com
+%
+
+\documentclass[landscape]{slides}
+\usepackage[landscape, margin=10mm]{geometry}
+
+\usepackage[russian]{babel}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\setlength{\unitlength}{6mm}
+
+\input{defs.tex}
+
+\begin{document}
+
+\author{В.Ю.\,Винник}
+
+\title{%
+Формальные модели\\%
+семантики и корректности,\\%
+методы спецификации\\%
+и верификации программ.\\
+Часть~2}
+
+\date{Softheme, 17.06.2014 н.э}
+
+\maketitle
+
+\begin{slide}
+        \begin{center}
+                \begin{LARGE}
+                        Теоретизирование~--\\это отыскивание сомнительных причин\\для обоснования того,\\во что и так веришь\\интуитивно.
+                \end{LARGE}
+        \end{center}
+\end{slide}
+
+\begin{slide}
+        \begin{center}
+                \begin{LARGE}
+                        Repetitio est mater studiorum
+                \end{LARGE}
+        \end{center}
+\end{slide}
+
+\begin{slide}
+        Программа как чёрный ящик принимает исходные данные и выдаёт результаты
+
+        \begin{center}
+                \begin{picture}(8,10)
+                        \put(0,8){\makebox(8,2)[c]{\shortstack[c]{Исходные данные, начальное состояние памяти}}}
+                        \put(4,8){\vector(0,-1){2}}
+                        \put(0,4){\framebox(8,2)[c]{Программа}}
+                        \put(4,4){\vector(0,-1){2}}
+                        \put(0,0){\makebox(8,2)[c]{\shortstack[c]{Результаты, заключительное состояние памяти}}}
+                \end{picture}
+        \end{center}
+
+        Описать семантику программы~-- значит описать свойства отображения исходных
+        данных на результаты.
+
+        Задать спецификацию программы~-- значит описать желаемое соотношение между
+        исходными данными и результатами.
+
+        Описать семантику управляющей конструкции~-- значит показать, как строится
+        семантика составной программы из семантики программ, охваченных ею.
+\end{slide}
+
+\begin{slide}
+        Метод Ч.\,Э.\,Р.\,Хоара (метод хоаровских троек)
+        \begin{itemize}
+                \item Предусловие~-- налагаемое на начальное состояние памяти.
+                \item Постусловие~-- налагаемое на заключительное состояние.
+                \item Спецификация~-- предусловие и постусловие.
+                \item Пред- и постусловие выражены предикатами, в которые входят
+                        имена переменных программы.
+        \end{itemize}
+\end{slide}
+
+\begin{slide}
+        Корректность программы относительно спецификации:
+        \begin{itemize}
+                \item Полная: если начальное состояние памяти удовлетворяет предусловию,
+                        то программа завершается, причём её заключительное состояние
+                        удовлетворяет постусловию.
+                        \[
+                                \tripleT{P}{S}{Q}.
+                        \]
+                \item Частичная: если начальное состояние памяти удовлетворяет предусловию,
+                        и если программа завершается, то её заключительное состояние
+                        удовлетворяет постусловию.
+                        \[
+                                \tripleP{P}{S}{Q}.
+                        \]
+                \item Если исходные данные нарушают предусловие, программа имеет право
+                делать что угодно, никакое её поведение не подтвердит и не опровергнет
+                её корректность.
+        \end{itemize}
+\end{slide}
+
+\begin{slide}
+        \begin{itemize}
+                \item Частичная корректность~-- программа имеет право не дать
+                        никакого результата, лишь бы не дала неправильный.
+                \item Частичная корректность~-- ни один запуск программы не даст свидетельства
+                        её некорректности (презумпция невиновности).
+                \item Программа, зависающая на любых исходных данных, корректна (в частичном смысле)
+                        относительно любой спецификации.
+                \item Всегда зависающая программа (в модели частичной корректности)~-- это универсальный
+                        решатель любых задач!
+                \item Если такая программа завершится, она выполнит любое желание. Но она не завершится
+                        никогда, поэтому её нельзя будет поймать на невыполнении желания.
+        \end{itemize}
+\end{slide}
+
+\begin{slide}
+Примеры спецификаций
+\begin{itemize}
+\item Нахождение максимума $c$ из значений двух переменных $a$, $b$:
+        \[
+                \tripleT
+                        {a = \alpha \land b = \beta}
+                        {S}
+                        {
+                                c \geqslant \alpha \land
+                                c \geqslant \beta \land
+                                (c = \alpha \lor c = \beta)
+                        } .
+        \]
+\item Обмен значениями переменных $a$ и $b$
+        \[
+                \tripleT
+                        {a = \alpha \land b = \beta}
+                        {S} 
+                        {a = \beta \land b = \alpha} .
+        \]
+\item Нахождение наибольшего общего делителя $c$ значений переменных $a$, $b$:
+        \[
+                \tripleT
+                        {a = \alpha \land b = \beta}
+                        {S} 
+                        {
+                                P(c) \land
+                                \forall \gamma : P(\gamma) \implies \gamma \leqslant c
+                        } ,
+        \]
+        где через $P(\xi)$ обозначен предикат "<$\xi$ делит $\alpha$ и $\beta$">:
+        \[
+                P(\xi) = (\exists \delta, \varepsilon : \alpha = \delta\cdot \xi \land \beta = \varepsilon\cdot \xi).
+        \]
+\end{itemize}
+\end{slide}
+
+\begin{slide}
+Общие свойства спецификаций и корректности
+\begin{itemize}
+\item Требование завершимости программы~$S$ на исходных данных из~$P$:
+        \[
+                \tripleT{P}{S}{\true} .
+        \]
+\item Требование незавершимости:
+        \[
+                \tripleP{P}{S}{\false} .
+        \]
+\item Матмодель частичной корректности удобнее, поэтому анализ полной коррректности
+        разбивают на две задачи: доказательство частичной корректности и отдельно
+        доказательство завершимости:
+        \[
+                \left(\tripleP{P}{S}{Q}\right)
+                \land 
+                \left(\tripleT{P}{S}{\true}\right)
+                \implies
+                \left(\tripleT{P}{S}{Q}\right) .
+        \]
+\end{itemize}
+\end{slide}
+
+\begin{slide}
+\begin{itemize}
+\item Тавтологии~-- тождественно истинные спецификации:
+        \[
+                \tripleP{P}{S}{\true} ,
+                \quad
+                \tripleP{\false}{S}{Q} .
+        \]
+\item Тождественно ложно для любого $P\neq \false$:
+        \[
+                \tripleT{P}{S}{\false}
+        \]
+\item Законы консеквенции
+        \[
+                \frac
+                {
+                        P \implies R, \  \tripleP{R}{S}{Q}
+                }
+                {
+                        \tripleP{P}{S}{Q}
+                } ,
+                \qquad
+                \frac
+                {
+                        \tripleP{P}{S}{R}, \  R \implies Q
+                }
+                {
+                        \tripleP{P}{S}{Q}
+                } ,
+        \]
+        усиление пред- и ослабление постусловия.
+\item Законы дистрибутивности
+        \[
+                \frac
+                {
+                        \tripleP{P_1}{S}{Q}, \  \tripleP{P_2}{S}{Q}
+                }
+                {
+                        \tripleP{P_1 \lor P_2}{S}{Q}
+                },
+                \qquad
+                \frac
+                {
+                        \tripleP{P}{S}{Q_1}, \  \tripleP{P}{S}{Q_2}
+                }
+                {
+                        \tripleP{P}{S}{Q_1 \land Q_2}
+                },
+        \]
+        работают в обе стороны~-- в силу законов консеквенции
+\end{itemize}
+\end{slide}
+  
+\begin{slide}
+Две самые важные программы
+\begin{itemize}
+\item Пустой оператор: для любого $P$
+        \[
+                \tripleP{P}{\nop}{P} .
+        \]
+\item Зависание: для любого $P$
+        \[
+                \tripleP{P}{\hang}{\false} .
+        \]
+\end{itemize}
+        Эквивалентность программ по поведению: $S_1 = S_2$ по определению, если для любых~$P$, $Q$
+        \[
+                \tripleP{P}{S_1}{Q}
+                \ \Leftrightarrow\  
+                \tripleP{P}{S_2}{Q}
+        \]
+\end{slide}
+
+\begin{slide}
+        Последовательная композиция
+        \begin{center}
+                \begin{picture}(18,2)
+                        \put(0,0){\makebox(2,2)[c]{\shortstack[c]{$x_0$}}}
+                        \put(2,1){\vector(1,0){2}}
+                        \put(4,0){\framebox(2,2)[c]{$S_1$}}
+                        \put(6,1){\vector(1,0){2}}
+                        \put(8,0){\makebox(2,2)[c]{\shortstack[c]{$x_1$}}}
+                        \put(10,1){\vector(1,0){2}}
+                        \put(12,0){\framebox(2,2)[c]{$S_2$}}
+                        \put(14,1){\vector(1,0){2}}
+                        \put(16,0){\makebox(2,2)[c]{\shortstack[c]{$x_2$}}}
+                \end{picture}
+        \end{center}
+ 
+                Результат первой программы~-- вход второй. Условие, наложенное на промежуточное состояние,
+                есть постусловие для~$S_1$ и предусловие для~$S_2$:
+                \[
+                        \frac
+                        {
+                                \tripleP{P}{S_1}{Q}
+                                \quad
+                                \tripleP{Q}{S_2}{R}
+                        }
+                        {
+                                \left\{P\right\}
+                                S_1 ; S_2
+                                \left\{R\right\}
+                        }
+                \]
+
+        Теорема об ассоциативности последовательной композиции
+        \[
+                (S_1;S_2);S_3
+                =
+                S_1;(S_2;S_3)
+        \]
+        Аналог ассоциативности сложения:
+        \[
+                (a + b) + c = a + (b + c).
+        \]
+\end{slide}
+
+\begin{slide}
+        Доказательство ($\Rightarrow$). Пусть $\tripleP{P}{(S_1;S_2);S_3}{Q}$. Тогда существует такое~$T$, что
+        \[
+                \tripleP{P}{S_1;S_2}{T},\ (1)
+                \qquad
+                \tripleP{T}{S_3}{Q}.\ (2)
+        \]
+        Из (1) следует существование такого~$U$, что
+        \[
+                \tripleP{P}{S_1}{U},\ (3)
+                \qquad
+                \tripleP{U}{S_2}{T},\ (4)
+        \]
+        Из (4) и (2) следует
+        \[
+                \tripleP{U}{S_2;S_3}{Q}. \ (5)
+        \]
+        Теперь из (3) и (5) следует
+        \[
+                \tripleP{P}{S_1; (S_2; S_3)}{Q} ,
+        \]
+        Quod erat demonstrandum.
+
+        Доказательство ($\Leftarrow$) аналогично.
+\end{slide}
+
+\begin{slide}
+        Особые свойства операторов относительно последовательной композиции
+        \begin{itemize}
+                \item Пустой оператор, поскольку $\triple{R}{\nop}{R}$:
+                        \[
+                                \nop ; S = S ; \nop = S .
+                        \]
+
+                \item Арифметический аналог:
+                \[
+                        1\cdot x = x\cdot 1 = x
+                \]
+
+                \item Зависание, поскольку $\triple{R}{\hang}{\false}$:
+                        \[
+                                S ; \hang = \hang .
+                        \]
+
+                \item Арифметический аналог:
+                \[
+                        0\cdot x = x\cdot 0 = 0
+                \]
+
+                \item Не выполняется свойство левого нуля, т.к. $\triple{\false}{S}{Q}$:
+                        \[
+                                \hang ; S \neq \hang .
+                        \]
+        \end{itemize}
+\end{slide}
+
+\begin{slide}
+        Ветвление
+        \begin{center}
+                \begin{picture}(24,9)(-12,-9)
+                        \put(-2,0){\makebox(4,1)[c]{\shortstack[c]{$\{P\}$}}}
+                        \put(0,0){\vector(0,-1){1}}
+                        \put(-4,-2){\line(4,1){4}}
+                        \put(-4,-2){\line(4,-1){4}}
+                        \put(4,-2){\line(-4,-1){4}}
+                        \put(4,-2){\line(-4,1){4}}
+                        \put(-4,-4){\makebox(8,4)[c]{\shortstack[c]{$b$}}}
+                        \put(-5,-0.5){\makebox(0,0)[rt]{{$\{P \land b\}$}}}
+                        \put(5,-0.5){\makebox(0,0)[lt]{{$\{P \land \neg b\}$}}}
+                        \put(-4,-2){\line(-1,0){4}}
+                        \put(-8,-2){\vector(0,-1){2}}
+                        \put(-12,-6){\framebox(8,2)[c]{\shortstack[c]{$S_1$}}}
+                        \put(-8,-6){\line(0,-1){2}}
+                        \put(-8,-8){\line(1,0){8}}
+                        \put(4,-2){\line(1,0){4}}
+                        \put(-2,-8.9){\makebox(4,4)[c]{\shortstack[c]{$\{Q\}$}}}
+                        \put(8,-2){\vector(0,-1){2}}
+                        \put(4,-6){\framebox(8,2)[c]{\shortstack[c]{$S_2$}}}
+                        \put(8,-6){\line(0,-1){2}}
+                        \put(8,-8){\line(-1,0){8}}
+                        \put(0,-8){\vector(0,-1){1}}
+                \end{picture}
+        \end{center}
+        Выполняется программа от начала к концу, а анализируется~-- с конца к началу!
+        \[
+                \frac
+                {
+                        \tripleP{P \land b}{S_1}{Q}
+                        \quad
+                        \tripleP{P \land \neg b}{S_2}{Q}
+                }
+                {
+                        \tripleP{P}{\ifelse{b}{S_1}{S_2}} {Q}
+                }
+        \]
+\end{slide}
+
+\begin{slide}
+        Теоремы об эквивалентных преобразованиях
+
+Идемпотентность:
+        \[
+                S = \ifelse{b}{S}{S} .
+        \]
+
+Сокращение:
+        \[
+                S = \ifelse{\true}{S}{T} .
+        \]
+
+Обращение условия:
+        \[
+                \ifelse{b}{S_1}{S_2} = \ifelse{\neg b}{S_2}{S_1} .
+        \]
+
+Дистрибутивность последовательной относительно условной:
+        \[
+                S_1; \ifelse{b}{S_2}{S_3} = \ifelse{b}{S_1; S_2}{S_1 ;S_3} .
+        \]
+
+Перестановка условий:
+        \begin{multline*}
+                \ifelse{b}{(\ifelse{c}{S_1}{S_2})}{S_3} = \\
+                \ifelse{c}{(\ifelse{b}{S_1}{S_3})}{(\ifelse{b}{S_2}{S_3})} .
+        \end{multline*}
+\end{slide}
+
+\begin{slide}
+        Циклическая композиция
+
+        Инвариант цикла~-- предикат~$I$, истинность которого сохраняется телом цикла.
+        
+        Если истинность инварианта обеспечена перед входом в цикл, то она
+        гарантированно сохраняется после каждой итераци, а значит и после завершения цикла.
+
+        Условие повторения~$b$ необходимо ложно после завершения цикла, ведь в противном случае цикл
+        бы не мог завершиться.
+        
+        \[
+                \frac
+                        {\tripleP{b\land I}{S}{I}}
+                        {\tripleP{I}{\while{b}{S}}{\neg b\land I}}
+        \]
+
+        Пусть $t\geqslant 0$~-- натуральнозначная функция от состояния
+        \[
+                \frac
+                        {\tripleT{I \land b \land t=\tau}{S}{I \land t < \tau}}
+                        {\tripleT{I}{\while{b}{S}}{\neg b\land I}}
+        \]
+\end{slide}
+
+\begin{slide}
+        Замечательные свойства циклов:
+
+        \begin{itemize}
+        \item Пустой цикл
+        \[
+                \while{\false}{S} = \nop
+        \]
+        \item Вечный цикл
+        \[
+                \while{\true}{S} = \hang
+        \]
+        \item Поглощение условия внутри
+        \[
+                \while{b}{(\ifthen{b}{S})} = \while{b}{S}
+        \]
+        \item Поглощение условия снаружи
+        \[
+                \ifthen{b}{(\while{b}{S})} = \while{b}{S}
+        \]
+        \item Неподвижная точка
+        \[
+                \ifthen{b}{S} ; \while{b}{S} = \while{b}{S}
+        \]
+        \end{itemize}
+\end{slide}
+
+\begin{slide}
+\end{slide}
+
+\begin{slide}
+\end{slide}
+
+\begin{slide}
+\end{slide}
+
+\begin{slide}
+        \begin{Large}
+Теория — это когда все известно, но ничего не работает. Практика — это когда все работает, но никто не знает почему. Мы же объединяем теорию и практику: ничего не работает, и никто не знает почему!
+        \end{Large}
+
+\begin{flushright}
+\emph{Альберт Эйнштейн}
+\end{flushright}
+\end{slide}
+
+\begin{slide}
+        Литература
+        \begin{itemize}
+\item Hoare, C.\,A.\,R. An axiomatic basis for computer programming.\\Communications of the ACM 12 (10): 576–580.
+\item Floyd, R.\,W. Assigning meanings to programs. Proceedings of the American Mathematical Society Symposia on Applied Mathematics. Vol. 19, pp. 19–31. 1967.
+\item Hoare, C.\,A.\,R. and He Jifeng, Unifying Theories of Programming, Prentice Hall International Series in Computer Science, 1998.\\http://unifyingtheories.org
+        \end{itemize}
+\end{slide}
+
+\begin{slide}
+        \begin{itemize}
+\item Дейкстра Э. Дисциплина программирования. — М.: Мир, 1978. — 280 с.
+\item Грис Д. Наука программирования. — М.: Мир, 1984. — 289 с.
+\item Алагич С., Арбиб М. Проектирование корректных структурированных программ. — М.: Радио и связь, 1984. — 264 с.
+\item Андерсон Р. Доказательство правильности программ. — М.: Мир, 1982 — 287 с.
+\item Калинин А.Г., Мацкевич И.В. Универсальные языки программирования. Семантический подход. — М.: Радио и связь, 1991. — 400 с.
+        \end{itemize}
+\end{slide}
+
+\begin{slide}
+        \begin{itemize}
+\item Абрамов С.А  Элементы анализа программ. Частичные функции на множестве состояний. — М.: Наука, 1986. — 128 с.
+\item Замулин А.В. Формальная модель Java-программы, основанная на машинах абстрактных состояний // Программирование. — 2003. — № 3. — С. 15–28.
+\item Замулин А.В. Формальная семантика выражений и операторов языка Java // Программирование. — 2003. — № 5. — С. 31–45.
+\item Замулин А.В. Алгебраическая семантика императивного языка программирования // Программирование. — 2003. — № 6. — С. 51–64. 
+\item Egon Börger and Robert Stärk, Abstract State Machines: A Method for High-Level System Design and Analysis. Springer-Verlag, 2003.
+        \end{itemize}
+\end{slide}
+
+\end{document}
