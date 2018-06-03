@@ -673,6 +673,56 @@
 \end{slide}
 
 \begin{slide}
+Нахождение наибольшего элемента в массиве
+\begin{itemize}
+    \item Инвариант: $m = \mathrm{max} \{ a[j] \mid j \in \left[0, i\right) \}$.
+    \item Инициализация: $m\assign a[0];\ i\assign 1$.
+    \item Тело цикла: $\ifthen{a[i] > m}{m\assign a[i]};\ i\assign i+1$.
+    \item Завершение: $i = n$, тогда $m$~-- наибольший во всём массиве.
+\end{itemize}
+\end{slide}
+
+\begin{slide}
+Линейный поиск
+\begin{itemize}
+    \item Инвариант: $\forall j \in \left[0, i\right). m[j] \ne x$.
+    \item Инициализация: $i\assign 0$.
+    \item Тело цикла: $i\assign i+1$.
+    \item Завершение: $i = n \lor a[i] = x$.
+\end{itemize}
+\end{slide}
+
+\begin{slide}
+Поиск дихотомией
+\begin{itemize}
+    \item Инвариант: ключ может находиться только в диапазоне $[l,r)$.
+    \item Инициализация: $l\assign 0;\ r\assign n$.
+    \item Тело цикла: $m = (r+l)/2;\ \ifelse{x < a[m]}{r\assign m}{l\assign m}$. 
+    \item Завершение: $r-l \leqslant 1$.
+\end{itemize}
+\end{slide}
+
+\begin{slide}
+Сортировка вставками
+\begin{itemize}
+    \item Инвариант: элементы с индексами $[0,i)$ отсортированы.
+    \item Инициализация: $i\assign 1$.
+    \item Тело цикла: элемент $m[i]$ вставить на правильное место; $i\assign i+1$.
+    \item Завершение: $i = n$.
+\end{itemize}
+\end{slide}
+
+\begin{slide}
+Сортировка выборкой
+\begin{itemize}
+    \item Инвариант: элементы с индексами $[0,i)$~-- наименьшие элементы исходного массива.
+    \item Инициализация: $i\assign 1$.
+    \item Тело цикла: наименьший среди элементов $[i,n)$ поменять местами с элементом~$i$; $i\assign i+1$.
+    \item Завершение: $i = n$.
+\end{itemize}
+\end{slide}
+
+\begin{slide}
     Замечательные свойства циклов:
 
     \begin{itemize}
