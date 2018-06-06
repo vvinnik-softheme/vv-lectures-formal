@@ -1542,6 +1542,79 @@ R_2 = \wpof{S_2}{Q} = b\geqslant a.
 \end{slide}
 
 \begin{slide}
+Assert!
+
+\begin{verbatim}
+void append(mylist<int> &q, int x)
+{
+    const auto n = q.size();
+    assert(n >= 0);
+
+    q.push_back(x);
+
+    assert(q.size() == n+1);
+    assert(q.back() == x);
+}
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+Assert!
+
+\begin{verbatim}
+int factorial(int n)
+{
+  assert(n >= 0);
+
+  int result = 1;
+
+  while (n > 1) {
+    assert(result <= INT_MAX / n);
+
+    result *= n;
+    --n;
+  }
+
+  return result;
+}
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+Assert!
+
+\begin{verbatim}
+// Закольцованный двусвязный список
+void ListItem::InsertAfter(ListItem* _pItem)
+{
+    assert(_pItem);
+    assert(m_pPrevious == this);
+    assert(m_pNext == this);
+    assert(_pItem->m_pNext->m_pPrevious == _pItem);
+    assert(_pItem->m_pPrevious->m_pNext == _pItem);
+
+    m_pPrevious = _pItem;
+    m_pNext = _pItem->m_pNext;
+    m_pPrevious->m_pNext = this;
+    m_pNext->m_pPrevious = this;
+}
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+Инвариант класса
+
+\begin{itemize}
+    \item Должен обеспечиваться конструктором.
+    \item Входит в предусловие любого метода.
+    \item Входит в постусловие любого метода.
+    \item Сохраняется на всём протяжении времени жизни объекта.
+    \item Содержательно: объект в корректном состоянии.
+    \item Часто допускает программную реализацию.
+\end{itemize}
+\end{slide}
+
+\begin{slide}
 Литература
 \begin{itemize}
 \item Дейкстра Э. Дисциплина программирования.~-- М.: Мир, 1978.~-- 280~с.
