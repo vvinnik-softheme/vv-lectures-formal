@@ -783,6 +783,214 @@
 \end{slide}
 
 \begin{slide}
+Поиск подстроки в строке. Даны строки~$p$ длины~$m$ и~$s$ длины~$n$, $m\geqslant n$ и требуется найти (в переменной~$i$) первое (левое) вхождение~$p$ в~$s$.
+Если такого вхождения нет, должно выполняться условие~$i+m \geqslant n$.
+
+Формализация условия. Нужно выразить понятие вхождения подстроки. Предикат~$R(i,l)$ содержательно означает: "<$l$~символов строки~$s$ начиная с позиции~$i$ совпадают с первыми $l$~символами строки~$p$">:
+\[
+R(i, l)\  =\  (i+l < n)\, \land\, \forall k\in[0,l).\; p_k = s_{i+k}.
+\]
+
+"<В позиции~$i$ строки~$s$ начинается вхождение строки~$p$">: $R(i,m)$.
+
+"<До позиции~$i$ нет вхождений~$p$ в~$s$">:
+\[
+V(i)\ =\ \forall j\in[0,i).\; \neg R(j,m)
+\]
+
+В позиции~$i$ строки~$s$ начинается \emph{первое} вхождение строки~$p$:
+\[
+R(i,m) \land V(i) .
+\]
+
+Очевидно, для всех~$i\in[0,n)$ истинно~$R(i,0)$.
+\end{slide}
+
+\begin{slide}
+\begin{verbatim}
+i = 0;
+l = 0;
+
+while (i+m != n  &  l != m) do
+    l = 0;
+
+    while (l != m  &  p[l] = s[i+l]) do
+        l := l+1
+        
+    od
+
+    if (l != m) then
+        i := i+1
+
+    fi
+
+od
+
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+\begin{verbatim}
+i = 0;
+l = 0;
+// R(i, l) & V(i)
+while (i+m != n  &  l != m) do
+    l = 0;
+
+    while (l != m  &  p[l] = s[i+l]) do
+        l := l+1
+        
+    od
+
+    if (l != m) then
+        i := i+1
+        
+    fi
+
+od
+
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+\begin{verbatim}
+i = 0;
+l = 0;
+// R(i, l) & V(i)
+while (i+m != n  &  l != m) do
+    l = 0;
+    // R(i, l) & V(i)
+    while (l != m  &  p[l] = s[i+l]) do
+        l := l+1
+        
+    od
+
+    if (l != m) then
+        i := i+1
+        
+    fi
+
+od
+
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+\begin{verbatim}
+i = 0;
+l = 0;
+// R(i, l) & V(i)
+while (i+m != n  &  l != m) do
+    l = 0;
+    // R(i, l) & V(i)
+    while (l != m  &  p[l] = s[i+l]) do
+        l := l+1
+        // R(i, l) & V(i)
+    od
+
+    if (l != m) then
+        i := i+1
+        
+    fi
+
+od
+
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+\begin{verbatim}
+i = 0;
+l = 0;
+// R(i, l) & V(i)
+while (i+m != n  &  l != m) do
+    l = 0;
+    // R(i, l) & V(i)
+    while (l != m  &  p[l] = s[i+l]) do
+        l := l+1
+        // R(i, l) & V(i)
+    od
+    // R(i, l) & V(i)
+    if (l != m) then
+        i := i+1
+        
+    fi
+
+od
+
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+\begin{verbatim}
+i = 0;
+l = 0;
+// R(i, l) & V(i)
+while (i+m != n  &  l != m) do
+    l = 0;
+    // R(i, l) & V(i)
+    while (l != m  &  p[l] = s[i+l]) do
+        l := l+1
+        // R(i, l) & V(i)
+    od
+    // R(i, l) & V(i)
+    if (l != m) then
+        i := i+1
+        // V(i)
+    fi
+
+od
+
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+\begin{verbatim}
+i = 0;
+l = 0;
+// R(i, l) & V(i)
+while (i+m != n  &  l != m) do
+    l = 0;
+    // R(i, l) & V(i)
+    while (l != m  &  p[l] = s[i+l]) do
+        l := l+1
+        // R(i, l) & V(i)
+    od
+    // R(i, l) & V(i)
+    if (l != m) then
+        i := i+1
+        // R(i, l) & V(i)
+    fi
+    // V(i)
+od
+
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
+\begin{verbatim}
+i = 0;
+l = 0;
+// R(i, l) & V(i)
+while (i+m != n  &  l != m) do
+    l = 0;
+    // R(i, l) & V(i)
+    while (l != m  &  p[l] = s[i+l]) do
+        l := l+1
+        // R(i, l) & V(i)
+    od
+    // R(i, l) & V(i)
+    if (l != m) then
+        i := i+1
+        // V(i)
+    fi
+    // R(i, l) & V(i)
+od
+// V(i) & (i+m = n | R(i, m))
+\end{verbatim}
+\end{slide}
+
+\begin{slide}
     Замечательные свойства циклов:
 
     \begin{itemize}
@@ -1091,23 +1299,73 @@ fi
         Пример. Найти, при каких исходных данных программа правильно находит максимум из двух чисел:
         \begin{eqnarray*}
                 S\ =\ \ifelse{a\geqslant b}{c\assign a}{c\assign b},\\
-                P\ =\ \wpof{S}{(c=a\lor c=b)\land c\geqslant a \land c\geqslant b} .
+                Q\ =\ (c=a\lor c=b)\land c\geqslant a \land c\geqslant b .
         \end{eqnarray*}
         Рассматриваем отдельно первую ветку:
-        \begin{eqnarray*}
-                \wpof{c\assign a}{(c=a\lor c=b)\land c\geqslant a \land c\geqslant b}\\
-                {}=\ (a=a\lor a=b)\land a\geqslant a \land a\geqslant b\\
-                {}=\ (\true\lor a=b)\land \true \land a\geqslant b\\
+        \begin{multline*}
+                \wpof{c\assign a}{Q}\ ={}\\
+                {}=\ (a=a\lor a=b)\land a\geqslant a \land a\geqslant b\ ={}\\
+                {}=\ (\true\lor a=b)\land \true \land a\geqslant b\ ={}\\
                 {}=\ a\geqslant b .
-        \end{eqnarray*}
+        \end{multline*}
         Для второй ветки аналогично:
         \[
                 \wpof{c\assign b}{(c=a\lor c=b)\land c\geqslant a \land c\geqslant b}\ =\ b\geqslant a .
         \]
         Тогда
         \[
-                P = ((a\geqslant b)\implies(a\geqslant b)) \land (\neg(a\geqslant b)\implies(b\geqslant a)) = \true .
+                \wpof{S}{Q} = ((a\geqslant b)\implies(a\geqslant b)) \land (\neg(a\geqslant b)\implies(b\geqslant a)) = \true .
         \]
+        Программа работает при любых исходных данных.
+\end{slide}
+
+\begin{slide}
+Пример. При каком условии та же программа~$S$ даст результат, не превышающий~$X$?
+        \[
+                S\ =\ \ifelse{a\geqslant b}{c\assign a}{c\assign b}.
+        \]
+        Для первой и второй веток получим:
+        \[
+                \wpof{c\assign a}{c \leqslant X}\ =\ (a \leqslant X),
+                \quad
+                \wpof{c\assign b}{c \leqslant X}\ =\ (b \leqslant X).
+        \]
+        Тогда
+        \begin{multline*}
+                \wpof{S}{c \leqslant X}\ ={}\\
+                {}=\ ((a\geqslant b)\implies(a \leqslant X)) \land (\neg(a\geqslant b)\implies(b \leqslant X))\ ={}\\
+                {}=\ (\neg(a\geqslant b)\lor(a \leqslant X)) \land ((a\geqslant b)\lor(b \leqslant X))\ ={}\\
+                {}=\ (a<b \lor a \leqslant X) \land (a\geqslant b \lor b \leqslant X)\ ={}\\
+                {}=\ (a \leqslant X \land a\geqslant b) \lor (a<b \land b\leqslant X) \lor (a \leqslant X \land b \leqslant X)\ ={}\\
+                {}=\ (a \leqslant X \land b \leqslant X).
+        \end{multline*}
+        Для того, чтобы наибольшее из чисел~$a$ и~$b$ не превышало заранее заданную границу~$X$, необходимо и достаточно, чтобы каждое из этих двух чисел не превышало~$X$.
+\end{slide}
+
+\begin{slide}
+От доказательства корректности готовых программ к синтезу программы по заданной спецификации
+
+Дано постусловие
+\[
+    Q = (c=a\lor c=b)\land c\geqslant a \land c\geqslant b.
+\]
+Найти программу, обеспечивающую его.
+
+Члены $c=a$ и $c=b$ можно обеспечить только операторами
+\[
+    S_1 = (c\assign a),\quad S_2 = (c\assign b) .
+\]
+
+Найдём их предусловия:
+\[
+R_1 = \wpof{S_1}{Q} = a\geqslant b,
+\quad
+R_2 = \wpof{S_2}{Q} = b\geqslant a.
+\]
+
+Если усилить~$R_2$ до $R'_2 = (b<a)$, получим $R'_2 = \neg R_1$.
+
+Тем самым, получено условие ветвления.
 \end{slide}
 
 \begin{slide}
